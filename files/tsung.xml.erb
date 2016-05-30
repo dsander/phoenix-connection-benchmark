@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/user/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="error" version="1.0">
+  <clients>
+<% (1..workers).each do |i| %>
+    <client host="tsung_worker_<%= i %>" cpu="2" use_controller_vm="false" maxusers="64000" />
+<% end %>
+  </clients>
+
+  <servers>
+    <server host="<%= target_ip %>" port="4000" type="tcp" />
+  </servers>
+
+  <load>
+    <arrivalphase phase="1" duration="100" unit="minute">
+      <users maxnumber="<%= workers * 64000 %>" arrivalrate="1000" unit="second" />
+    </arrivalphase>
+  </load>
+
+  <options>
+    <option name="ports_range" min="1025" max="65535"/>
+  </options>
+
+  <sessions>
+    <session name="websocket" probability="100" type="ts_websocket">
+      <request>
+        <websocket type="connect" path="/socket/websocket"></websocket>
+      </request>
+
+      <request subst="true">
+        <websocket type="message">{"topic":"rooms:lobby", "event":"phx_join", "payload": {"user":"%%ts_user_server:get_unique_id%%"}, "ref":"1"}</websocket>
+      </request>
+
+      <for var="i" from="1" to="1000" incr="1">
+        <thinktime value="30"/>
+      </for>
+    </session>
+  </sessions>
+</tsung>

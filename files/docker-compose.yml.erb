@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  master:
+    image: dsander/tsung
+    container_name: tsung_master
+    volumes:
+      - "/root/:/usr/local/tsung"
+    ports:
+      - "23:22"
+      - "4369:4369"
+      - "8091:8091"
+      - "9001-9050:9001-9050"
+    command:
+      "-f /usr/local/tsung/tsung.xml start"
+    environment:
+      - "constraint:node==bench-master"
+    networks:
+      - back
+<% (1..workers).each do |i| %>
+  worker_<%= i %>:
+    image: dsander/tsung
+    container_name: tsung_worker_<%= i %>
+    environment:
+        - "SLAVE=true"
+        - "constraint:node==bench-agent-<%= i %>"
+    networks:
+      - back
+<% end %>
+networks:
+  back:
+    driver: overlay
