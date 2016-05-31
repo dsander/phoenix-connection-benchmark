@@ -7,16 +7,14 @@ services:
     volumes:
       - "/root/:/usr/local/tsung"
     ports:
-      - "23:22"
-      - "4369:4369"
       - "8091:8091"
-      - "9001-9050:9001-9050"
     command:
-      "-f /usr/local/tsung/tsung.xml start"
+      "start"
     environment:
+      - TSUNG_CONFIG=/usr/local/tsung/tsung.xml
       - "constraint:node==bench-master"
     networks:
-      - back
+      - tsung
     depends_on:
 <% (1..workers).each do |i| %>
       - worker_<%= i %>
@@ -29,8 +27,8 @@ services:
         - "SLAVE=true"
         - "constraint:node==bench-agent-<%= i %>"
     networks:
-      - back
+      - tsung
 <% end %>
 networks:
-  back:
+  tsung:
     driver: overlay

@@ -71,7 +71,7 @@ class Runner
                         --swarm-discovery consul://#{kvip}:8500 \
                         --engine-opt \"cluster-store consul://#{kvip}:8500\" \
                         --engine-opt \"cluster-advertise eth1:2376\" \
-                          #{name}")
+                          #{name}", allow_failure: true)
   end
 
   def create_target
@@ -81,7 +81,7 @@ class Runner
                         --digitalocean-size=64gb \
                         --digitalocean-region=fra1 \
                         --digitalocean-image=ubuntu-14-04-x64 \
-                          bench-target")
+                          bench-target", allow_failure: true)
     run("docker-machine scp files/setup_chat.sh bench-target:/root/setup_chat.sh")
     run("docker-machine ssh bench-target /root/setup_chat.sh")
   end
@@ -121,10 +121,15 @@ class Runner
     puts ""
   end
 
-  def run(cmd, streaming_output: true)
+  def run(cmd, streaming_output: true, allow_failure: false)
     (status, output) = Runner.open3(cmd, streaming_output)
     if status != 0
-      raise "Failure executing command '#{cmd}':\n#{output}"
+      msg = "Failure executing command '#{cmd}':\n#{output}"
+      if allow_failure
+        puts msg
+      else
+        raise msg
+      end
     end
     output
   end

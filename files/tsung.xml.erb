@@ -3,7 +3,7 @@
 <tsung loglevel="error" version="1.0">
   <clients>
 <% (1..workers).each do |i| %>
-    <client host="tsung_worker_<%= i %>" cpu="2" use_controller_vm="false" maxusers="64000" />
+    <client host="tsung_worker_<%= i %>" cpu="1" use_controller_vm="false" maxusers="60000" />
 <% end %>
   </clients>
 
@@ -13,12 +13,15 @@
 
   <load>
     <arrivalphase phase="1" duration="100" unit="minute">
-      <users maxnumber="<%= workers * 64000 %>" arrivalrate="1000" unit="second" />
+      <users maxnumber="<%= workers * 60000 %>" arrivalrate="750" unit="second" />
     </arrivalphase>
   </load>
 
   <options>
     <option name="ports_range" min="1025" max="65535"/>
+    <option name="tcp_reuseaddr" value="true"/>
+    <option name="connect_timeout" value="50000000"/>
+    <option name="max_retries" value="20"/>
   </options>
 
   <sessions>
