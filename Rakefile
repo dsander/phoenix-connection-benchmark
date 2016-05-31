@@ -96,13 +96,13 @@ class Runner
   end
 
   def write_config
-    renderer = ERB.new(File.read('./files/docker-compose.yml.erb'))
+    renderer = ERB.new(File.read('./files/docker-compose.yml.erb'), nil, '<>')
     File.open('docker-compose.yml', 'w') do |f|
       f.write(renderer.result(binding()))
     end
 
     target_ip = run("docker-machine ip bench-target", streaming_output: false).strip
-    renderer = ERB.new(File.read('./files/tsung.xml.erb'))
+    renderer = ERB.new(File.read('./files/tsung.xml.erb'), nil, '<>')
     File.open('tsung.xml', 'w') do |f|
       f.write(renderer.result(binding()))
     end
@@ -115,7 +115,7 @@ class Runner
     puts ""
     puts "Run the following commands to start the benchmark:"
     puts ""
-    puts 'docker-machine ssh bench-target "cd chat; MIX_ENV=prod PORT=4000 mix phoenix.server"'
+    puts 'docker-machine ssh bench-target "cd chat; MIX_ENV=prod PORT=4000 ELIXIR_ERL_OPTS="+P 10000000" mix phoenix.server"'
     puts "eval $(docker-machine env --swarm bench-master)"
     puts "docker-compose up"
     puts ""
@@ -197,6 +197,11 @@ end
 
 desc "Setup the tsung cluster and the benchmark target"
 task :setup => [:setup_all, :update_config] do
+  Runner.new.info
+end
+
+desc "Info"
+task :info do
   Runner.new.info
 end
 

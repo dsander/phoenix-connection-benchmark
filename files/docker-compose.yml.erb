@@ -17,6 +17,10 @@ services:
       - "constraint:node==bench-master"
     networks:
       - back
+    depends_on:
+<% (1..workers).each do |i| %>
+      - worker_<%= i %>
+<% end %>
 <% (1..workers).each do |i| %>
   worker_<%= i %>:
     image: dsander/tsung
