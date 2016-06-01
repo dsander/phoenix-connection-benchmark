@@ -73,6 +73,7 @@ class Runner
       threads << Thread.new do
         create_swarm(master: false, number: i)
       end
+      sleep 1
     end
     threads.each(&:join)
   end
@@ -101,6 +102,7 @@ class Runner
   end
 
   def create_target
+    return if Config.benchmark_target.ip
     puts "Creating benchmark target"
 
     run("docker-machine create \
@@ -120,6 +122,7 @@ class Runner
   end
 
   def teardown_target
+    return if Config.benchmark_target.ip
     run("docker-machine rm -f bench-target")
   end
 
@@ -129,7 +132,7 @@ class Runner
       f.write(renderer.result(binding()))
     end
 
-    target_ip = run("docker-machine ip bench-target", streaming_output: false).strip
+    target_ip = Config.benchmark_target.ip || run("docker-machine ip bench-target", streaming_output: false).strip
     renderer = ERB.new(File.read(Config.tsung.template), nil, '<>')
     File.open('tsung.xml', 'w') do |f|
       f.write(renderer.result(binding()))
@@ -139,7 +142,7 @@ class Runner
 
   def info
     puts "Tsung controller: http://#{run("docker-machine ip bench-master", streaming_output: false).strip}:8091"
-    puts "Phoenix chat application: http://#{run("docker-machine ip bench-target", streaming_output: false).strip}:4000"
+    puts "Phoenix chat application: http://#{Config.benchmark_target.ip || run("docker-machine ip bench-target", streaming_output: false).strip}:4000"
     puts ""
     puts "Run the following commands to start the benchmark:"
     puts ""

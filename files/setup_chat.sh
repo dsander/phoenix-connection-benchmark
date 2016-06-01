@@ -9,6 +9,7 @@ net.ipv4.tcp_rmem='1024 4096 16384'
 net.ipv4.tcp_wmem='1024 4096 16384'
 net.core.rmem_max=16384
 net.core.wmem_max=16384
+net.ipv4.tcp_moderate_rcvbuf=0
 EOF
 
 cat <<EOF >> /etc/security/limits.conf
@@ -19,7 +20,7 @@ EOF
 wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
 sudo dpkg -i erlang-solutions_1.0_all.deb
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-sudo apt-get install -y --no-install-recommends elixir git esl-erlang nodejs htop
+sudo apt-get install -y --no-install-recommends elixir git esl-erlang nodejs htop patch
 sudo update-locale LC_ALL=en_US.UTF-8
 
 rm -rf chat
