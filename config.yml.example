@@ -7,7 +7,7 @@ tsung:
 #digital_ocean_token: YOURTOKEN
 benchmark_target:
   # To speed up the droplet creation use a snapshot of a previous provision
-  image: 17604285
+  image: ubuntu-14-04-x64
   region: fra1
   size: 64gb
 worker:
