@@ -1,14 +1,40 @@
 require 'open3'
 require 'erb'
+require 'yaml'
 
 task :check do
-  unless ENV['DO_TOKEN']
-    puts "Please set your Digital Ocean API docker in DO_TOKEN"
+  if !ENV['DO_TOKEN'] && !Config.digital_ocean_token
+    puts "Please set your Digital Ocean API docker in DO_TOKEN or config.yml"
     exit
   end
-  unless ENV['WORKERS']
-    puts "Please set the amount of tsung workers in WORKERS"
+  unless Config.workers
+    puts "Please set the amount of tsung workers in config.yml"
     exit
+  end
+end
+
+class Config
+  class << self
+    def method_missing(key)
+      config.send(key)
+    end
+
+    private
+
+    def config
+      @config ||= begin
+        hash = YAML.load(File.read('config.yml'))
+        to_ostruct(hash)
+      end
+    end
+
+    def to_ostruct(value)
+      if value.is_a?(Hash)
+        OpenStruct.new(Hash[value.map { |key, value| [key, to_ostruct(value)]}])
+      else
+        value
+      end
+    end
   end
 end
 
@@ -16,8 +42,8 @@ class Runner
   attr_reader :token, :workers, :kvip
 
   def initialize(token = nil, workers=nil)
-    @token = token
-    @workers = workers.to_i
+    @token = ENV['DO_TOKEN'] || Config.digital_ocean_token
+    @workers = Config.workers
   end
 
   def create_consul
@@ -25,10 +51,10 @@ class Runner
     run("docker-machine create \
                         --driver=digitalocean \
                         --digitalocean-access-token=#{token} \
-                        --digitalocean-size=512mb \
-                        --digitalocean-region=fra1 \
+                        --digitalocean-size=#{Config.kv_store.size} \
+                        --digitalocean-region=#{Config.kv_store.region} \
+                        --digitalocean-image=#{Config.kv_store.image} \
                         --digitalocean-private-networking=true \
-                        --digitalocean-image=ubuntu-14-04-x64 \
                           bench-kv-store")
     run("docker $(docker-machine config bench-kv-store) run -d \
                 --net=host progrium/consul --server -bootstrap-expect 1")
@@ -62,10 +88,10 @@ class Runner
     run("docker-machine create \
                         --driver=digitalocean \
                         --digitalocean-access-token=#{token} \
-                        --digitalocean-size=4gb \
-                        --digitalocean-region=fra1 \
+                        --digitalocean-size=#{Config.worker.size} \
+                        --digitalocean-region=#{Config.worker.region} \
+                        --digitalocean-image=#{Config.worker.image} \
                         --digitalocean-private-networking=true \
-                        --digitalocean-image=ubuntu-14-04-x64 \
                         --swarm \
                         #{options[:master] ? '--swarm-master ' : ''} \
                         --swarm-discovery consul://#{kvip}:8500 \
@@ -75,12 +101,14 @@ class Runner
   end
 
   def create_target
+    puts "Creating benchmark target"
+
     run("docker-machine create \
                         --driver=digitalocean \
                         --digitalocean-access-token=#{token} \
-                        --digitalocean-size=64gb \
-                        --digitalocean-region=fra1 \
-                        --digitalocean-image=ubuntu-14-04-x64 \
+                        --digitalocean-size=#{Config.benchmark_target.size} \
+                        --digitalocean-region=#{Config.benchmark_target.region} \
+                        --digitalocean-image=#{Config.benchmark_target.image} \
                           bench-target", allow_failure: true)
     run("docker-machine scp files/setup_chat.sh bench-target:/root/setup_chat.sh")
     run("docker-machine ssh bench-target /root/setup_chat.sh")
@@ -102,7 +130,7 @@ class Runner
     end
 
     target_ip = run("docker-machine ip bench-target", streaming_output: false).strip
-    renderer = ERB.new(File.read('./files/tsung.xml.erb'), nil, '<>')
+    renderer = ERB.new(File.read(Config.tsung.template), nil, '<>')
     File.open('tsung.xml', 'w') do |f|
       f.write(renderer.result(binding()))
     end
@@ -157,7 +185,7 @@ end
 
 desc "Setup tsung cluster"
 task :setup_cluster => [:check] do
-  runner = Runner.new(ENV['DO_TOKEN'], ENV['WORKERS'])
+  runner = Runner.new
   puts "Settting up docker tsung swarm cluster with #{runner.workers} workers ..."
 
   runner.create_consul
@@ -172,21 +200,21 @@ end
 desc "Teardown tsung cluster"
 task :teardown_cluster => [:check] do
   puts "Removing swarm cluster"
-  runner = Runner.new(ENV['DO_TOKEN'], ENV['WORKERS'])
+  runner = Runner.new
   runner.teardown
 end
 
 desc "Setup benchmark target"
 task :setup_target => [:check] do
   puts "Creating benchmark target machine ..."
-  runner = Runner.new(ENV['DO_TOKEN'])
+  runner = Runner.new
   runner.create_target
 end
 
 desc "Teardown benchmark target"
 task :teardown_target => [:check] do
   puts "Removing benchmark target machine ...."
-  runner = Runner.new(ENV['DO_TOKEN'])
+  runner = Runner.new
   runner.teardown_target
 end
 
@@ -196,7 +224,7 @@ end
 
 desc "Update and upload config files"
 task :update_config => [:check] do
-  runner = Runner.new(ENV['DO_TOKEN'], ENV['WORKERS'])
+  runner = Runner.new
   runner.write_config
 end
 

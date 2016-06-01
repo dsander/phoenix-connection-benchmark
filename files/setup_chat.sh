@@ -2,8 +2,8 @@
 set -e
 
 cat <<EOF >> /etc/sysctl.conf
-fs.file-max=12000500
-fs.nr_open=20000500
+fs.file-max=22000500
+fs.nr_open=30000500
 net.ipv4.tcp_mem='10000000 10000000 10000000'
 net.ipv4.tcp_rmem='1024 4096 16384'
 net.ipv4.tcp_wmem='1024 4096 16384'
@@ -12,8 +12,8 @@ net.core.wmem_max=16384
 EOF
 
 cat <<EOF >> /etc/security/limits.conf
-root      hard    nofile      20000000
-root      soft    nofile      20000000
+root      hard    nofile      30000000
+root      soft    nofile      30000000
 EOF
 
 wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb

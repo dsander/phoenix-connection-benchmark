@@ -13,7 +13,7 @@
 
   <load>
     <arrivalphase phase="1" duration="100" unit="minute">
-      <users maxnumber="<%= workers * 60000 %>" arrivalrate="750" unit="second" />
+      <users maxnumber="<%= Config.tsung.maxnumber || workers * 60000 %>" arrivalrate="<%= Config.tsung.arrivalrate %>" unit="second" />
     </arrivalphase>
   </load>
 
