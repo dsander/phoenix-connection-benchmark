@@ -10,6 +10,9 @@ class Runner
   end
 
   def create_consul
+    @kvip = run("echo $(docker-machine ip bench-kv-store)", streaming_output: false, allow_failure: true).strip
+    return if @kvip =~ /(?:[0-9]{1,3}\.){3}[0-9]{1,3}/
+
     puts "Creating consul container ..."
     run("docker-machine create \
                         --driver=digitalocean \

@@ -21,7 +21,6 @@ task :setup_cluster => [:check] do
 
   runner.create_cluster
 
-  runner.run("eval $(docker-machine env --swarm bench-master)")
   puts "Cluster created make sure to configure docker to connect to the swarm master:"
   puts "eval $(docker-machine env --swarm bench-master)"
 end
