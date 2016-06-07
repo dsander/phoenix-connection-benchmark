@@ -1,0 +1,52 @@
+diff --git a/config/prod.exs b/config/prod.exs
+index 8c7da1b..24ff135 100644
+--- a/config/prod.exs
++++ b/config/prod.exs
+@@ -8,7 +8,11 @@ use Mix.Config
+ # meaningful, we use this information when generating URLs.
+ config :chat, Chat.Endpoint,
+   http: [port: {:system, "PORT"}],
+-  url: [host: "example.com"]
++  check_origin: false,
++  url: [host: "example.com"],
++  pubsub: [name: Chat.PubSub,
++           pool_size: 20,
++           adapter: Phoenix.PubSub.PG2]
+ 
+ # ## SSL Support
+ #
+@@ -25,7 +29,7 @@ config :chat, Chat.Endpoint,
+ # disk for the key and cert.
+ 
+ # Do not print debug messages in production
+-config :logger, level: :info
++config :logger, level: :error
+ 
+ # ## Using releases
+ #
+diff --git a/web/channels/room_channel.ex b/web/channels/room_channel.ex
+index bc92759..66ead5c 100644
+--- a/web/channels/room_channel.ex
++++ b/web/channels/room_channel.ex
+@@ -14,8 +14,6 @@ defmodule Chat.RoomChannel do
+   """
+   def join("rooms:lobby", message, socket) do
+     Process.flag(:trap_exit, true)
+-    :timer.send_interval(5000, :ping)
+-    send(self, {:after_join, message})
+ 
+     {:ok, socket}
+   end
+diff --git a/web/channels/user_socket.ex b/web/channels/user_socket.ex
+index 888da86..4b2215a 100644
+--- a/web/channels/user_socket.ex
++++ b/web/channels/user_socket.ex
+@@ -3,7 +3,7 @@ defmodule Chat.UserSocket do
+ 
+   channel "rooms:*", Chat.RoomChannel
+ 
+-  transport :websocket, Phoenix.Transports.WebSocket
++  transport :websocket, Phoenix.Transports.WebSocket, timeout: :infinity
+   transport :longpoll, Phoenix.Transports.LongPoll
+ 
+   def connect(_params, socket) do

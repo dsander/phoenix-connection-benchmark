@@ -1,8 +1,8 @@
-workers: 35
+workers: 40
 tsung:
   # The user limit is determined automatically based on workers * 60000
   #maxnumber: 2000000
-  arrivalrate: 750
+  arrivalrate: 500
   template: files/tsung.xml.erb
 #digital_ocean_token: YOURTOKEN
 benchmark_target:

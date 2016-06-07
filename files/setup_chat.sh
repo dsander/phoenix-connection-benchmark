@@ -10,6 +10,9 @@ net.ipv4.tcp_wmem='1024 4096 16384'
 net.core.rmem_max=16384
 net.core.wmem_max=16384
 net.ipv4.tcp_moderate_rcvbuf=0
+net.core.somaxconn=4096
+net.core.netdev_max_backlog=4096
+net.ipv4.tcp_max_syn_backlog=4096
 EOF
 
 cat <<EOF >> /etc/security/limits.conf

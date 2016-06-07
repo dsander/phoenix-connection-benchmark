@@ -107,12 +107,14 @@ class Runner
   end
 
   def info
+    puts ""
+    puts ""
     puts "Tsung controller: http://#{run("docker-machine ip bench-master", streaming_output: false).strip}:8091"
     puts "Phoenix chat application: http://#{Config.benchmark_target.ip || run("docker-machine ip bench-target", streaming_output: false).strip}:4000"
     puts ""
     puts "Run the following commands to start the benchmark:"
     puts ""
-    puts 'docker-machine ssh bench-target "cd chat; MIX_ENV=prod PORT=4000 ELIXIR_ERL_OPTS="+P 10000000" mix phoenix.server"'
+    puts "docker-machine ssh bench-target \"cd chat; MIX_ENV=prod PORT=4000 iex --name bench@127.0.0.1 --cookie 123 --erl '+P 5000000 -kernel inet_dist_listen_min 9001 inet_dist_listen_max 9001' -S mix phoenix.server\""
     puts "eval $(docker-machine env --swarm bench-master)"
     puts "docker-compose up"
     puts ""
