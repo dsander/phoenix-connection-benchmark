@@ -1,0 +1,12 @@
+
+=ERROR REPORT==== 7-Jun-2016::17:25:57 ===
+global: tsung32@tsung_worker_8 failed to connect to tsung42@tsung_worker_39
+
+=ERROR REPORT==== 7-Jun-2016::17:26:00 ===
+global: tsung32@tsung_worker_8 failed to connect to tsung43@tsung_worker_40
+
+=ERROR REPORT==== 7-Jun-2016::17:26:29 ===
+global: tsung32@tsung_worker_8 failed to connect to tsung54@tsung_worker_28
+
+=ERROR REPORT==== 7-Jun-2016::17:26:59 ===
+global: tsung32@tsung_worker_8 failed to connect to tsung66@tsung_worker_27

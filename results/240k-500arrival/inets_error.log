@@ -1,0 +1,6 @@
+[07/Jun/2016:16:06:26 -0000] access to /favicon.ico failed for 0:0:0:0:0:FFFF:1F10:E738, reason: 
+"httpd_file: Can't access /usr/local/tsung/20160607-1605/favicon.ico: File not found"
+[07/Jun/2016:16:06:27 -0000] access to /assets/ico/favicon.ico failed for 0:0:0:0:0:FFFF:1F10:E738, reason: 
+"httpd_file: Can't access /usr/local/tsung/20160607-1605/assets/ico/favicon.ico: File not found"
+[07/Jun/2016:16:07:19 -0000] access to /favicon.ico failed for 0:0:0:0:0:FFFF:1F10:E738, reason: 
+"httpd_file: Can't access /usr/local/tsung/20160607-1605/favicon.ico: File not found"

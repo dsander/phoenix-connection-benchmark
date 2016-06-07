@@ -1,0 +1,8 @@
+
+=ERROR REPORT==== 7-Jun-2016::16:06:14 ===
+The global_name_server register process received an unexpected message:
+{{#Ref<0.0.0.564>,tsung16@tsung_worker_24},yes}
+
+=ERROR REPORT==== 7-Jun-2016::16:06:14 ===
+The global_name_server register process received an unexpected message:
+{{#Ref<0.0.0.564>,tsung36@tsung_worker_4},yes}

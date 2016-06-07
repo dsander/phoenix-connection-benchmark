@@ -1,0 +1,12 @@
+
+=INFO REPORT==== 7-Jun-2016::16:05:34 ===
+    ts_config_server:(5:<0.71.0>) Config server started, logdir is "/usr/local/tsung/20160607-1605"
+ 
+=INFO REPORT==== 7-Jun-2016::16:05:34 ===
+              ts_mon:(5:<0.53.0>) starting monitor, global 
+
+=INFO REPORT==== 7-Jun-2016::16:05:34 ===
+           ts_config:(5:<0.71.0>) Reading config file: /usr/local/tsung/tsung.xml
+
+=INFO REPORT==== 7-Jun-2016::16:05:34 ===
+           ts_config:(5:<0.71.0>) Session name for id 1 is "websocket"
