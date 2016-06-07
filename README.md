@@ -57,7 +57,7 @@ The benchmark was run with this [example configuration](config.yml.example), the
 <img src="images/connections.png" width="600">
 <img src="images/load.png" width="700">
 
-Tsung graphs are available [here](https://rawgit.com/dsander/phoenix-connection-benchmark/master/results/240k-500arrival/graph.html)
+Tsung graphs are available [here](https://cdn.rawgit.com/dsander/phoenix-connection-benchmark/76ab3a2448775c085a7bb7a6ea4e5d716dcd244e/results/240k-500arrival/graph.html)
 
 ### Lessons learned
 
